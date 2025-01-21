@@ -1,6 +1,6 @@
 use crossterm::event::KeyCode;
 use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers};
-use crossterm::{cursor, event, execute, ExecutableCommand};
+use crossterm::style::Stylize;
 use std::io::{self, stdout, Write};
 mod terminal;
 use terminal::Terminal;
@@ -27,7 +27,9 @@ impl Editor {
         loop {
             let event = read()?;
             self.evaluate_event(&event);
+            Terminal::hide_cursor()?;
             self.refresh_screen()?;
+            Terminal::show_cursor()?;
             if self.should_quit {
                 break;
             }
@@ -43,25 +45,29 @@ impl Editor {
                     self.should_quit = true;
                 }
                 KeyCode::Char(c) => {
-                    print!("{}", c);
+                    Terminal::print(&c.to_string());
                     io::stdout().flush().unwrap();
                 },
-                _ => print!("{:?}\r\n", code),
+                _ => (),
             }
         }
     }
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
         if self.should_quit {
             Terminal::clear_screen()?;
-            print!("Goodbye.\r\n");
-        }
+            Terminal::print("Goodbye.\r\n");
+        } 
         Ok(())
     }
     fn draw_rows(&self) {
         let terminal_size =  Terminal::size().unwrap();
-        for _ in 0..terminal_size.1 {
-            print!("~\r\n");
+        for i in 0..terminal_size.1 {
+            if i == terminal_size.1 - 1 {
+                Terminal::print("Footer");
+            } else {
+            Terminal::print("~\r\n");
+            }
         }
-        cursor::MoveTo(0, 0);
+        Terminal::move_cursor(0, 0);
     }
 }
