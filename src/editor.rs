@@ -3,7 +3,7 @@ use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModi
 use crossterm::style::Stylize;
 use std::io::{self, stdout, Write};
 mod terminal;
-use terminal::Terminal;
+use terminal::{Position, Terminal};
 
 pub struct Editor {
     should_quit: bool,
@@ -68,6 +68,7 @@ impl Editor {
             Terminal::print("~\r\n");
             }
         }
-        Terminal::move_cursor(0, 0);
+        let top_left = Position { x: 0, y: 0 };
+        Terminal::move_cursor(&top_left);
     }
 }

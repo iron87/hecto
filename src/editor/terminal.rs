@@ -4,6 +4,10 @@ use crossterm::{ cursor, queue, style::Print, terminal::{self,disable_raw_mode, 
 
 pub struct Terminal {}
 
+pub struct Position {
+    pub x: u16,
+    pub y: u16,
+}
 
 impl Terminal {
     pub fn default() -> Self {
@@ -30,8 +34,8 @@ impl Terminal {
         terminal::size()
     }
 
-    pub fn move_cursor(x: u16, y: u16) -> Result<(), std::io::Error> {
-       queue!(stdout(),cursor::MoveTo(x, y))?;
+    pub fn move_cursor(position: &Position) -> Result<(), std::io::Error> {
+       queue!(stdout(),cursor::MoveTo(position.x,position.y))?;
        Ok(())
 
     }
