@@ -59,24 +59,31 @@ impl Editor {
         } 
         Ok(())
     }
-    fn draw_rows(&self) {
+    fn draw_rows(&self) -> Result<(), std::io::Error> {
         let terminal_size =  Terminal::size().unwrap();
         for i in 0..terminal_size.1 {
             if i == terminal_size.1 - 1 {
-                Terminal::print("Footer");
+                Terminal::print("Footer")?;
             }
             else if i == terminal_size.1 / 3 {
                 Self::print_welcome_message();
             } else {
-                Terminal::print("~\r\n");
+                Terminal::print("~\r\n")?;
             }
         }
         let top_left = Position { x: 0, y: 0 };
-        Terminal::move_cursor(&top_left);
+        Terminal::move_cursor(&top_left)?;
+        Ok(())
     }
 
 
     fn print_welcome_message() {
-        Terminal::print(&format!("Hecto editor -- version {}\r\n", env!("CARGO_PKG_VERSION")));
+        Terminal::print(&Self::center_text(&format!("Hecto editor -- version {}\r\n", env!("CARGO_PKG_VERSION"))));
     }
-}
+
+    fn center_text(text: &str) -> String {
+        let terminl_width = Terminal::size().unwrap().0;
+        let padding = " ".repeat((terminl_width as usize - text.len()) / 2);
+        return format!("{}{}", padding, text);
+    }
+} 
